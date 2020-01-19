@@ -1,0 +1,24 @@
+body,html{
+  height: 100%;
+  margin: 0;
+  background: #7F7FD5;
+  background: -webkit-linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+  background: linear-gradient(to right, #91EAE4, #86A8E7, #7F7FD5);
+}
+
+.container {
+
+  text-align: center;
+  width: 650px;
+  background-color: gray;
+
+  background:  rgb(204, 204, 204); /* Fallback for older browsers without RGBA-support */
+  background: rgba(204, 204, 204, 0.3);
+}
+
+#homePageContainer {
+
+  margin-top: 160px;
+  border-radius: 25px;
+
+}
