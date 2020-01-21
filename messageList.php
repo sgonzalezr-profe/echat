@@ -34,7 +34,7 @@ if (array_key_exists("currentSender", $_POST) && array_key_exists("currentReceiv
 
 
 } else {
-    header("Location: index.php");
+    header("Location: index.php?logout=1");
 
 
 }
