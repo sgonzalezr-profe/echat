@@ -7,7 +7,7 @@ X - Characters like 'á' are stored but when the messages are loaded they are wr
 - Re-factorize JS/jQuery code (global variables coupled to functions).
 - Use sockets.io (to replace execute function every 2 seconds)
 
-Done in commit:
+Done in commit 2:
 - Solved: Characters like 'á' are stored but when the messages are loaded they are wrong.
 - User list and messages are only loaded when there are new ones (but all of them are loaded, not only new ones).
 - Return key now wotking to send messages.
