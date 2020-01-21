@@ -116,37 +116,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	<script type="text/javascript">
 		var currentSender = "<?php echo $_SESSION['username'] ?>"; //current_user from session variable
 		var currentReceiver = ""; //user with the conversation
-		var users; //all user data
+		var users = null; //all user data
 		var iSender = 0; //index in the user array of sender
 		var iReceiver = 0; //index in the user array of receiver
-		var messages; //all messages of the current conversation
+		var messages = null; //all messages of the current conversation
 		var firstTime = true; //load the first user the first load
 		
 
 		//paint all received messages of the current conversation
-		function paint_messages(pMessages, pUsers) {
+		function paint_messages() {
 			
 			//remove everything before updating
 			$("#messages").empty();
 
 			//looking for the data about currentSender and currentReceiver
-			for(var i = 0; i < pUsers.length; i++) {
-				if (pUsers[i].username == currentSender) {
+			for(var i = 0; i < users.length; i++) {
+				if (users[i].username == currentSender) {
 					iSender = i;
-				} else if (pUsers[i].username == currentReceiver) {
+				} else if (users[i].username == currentReceiver) {
 					iReceiver = i;
 				} else if (iReceiver != 0 && iSender != 0) {
 					break;
 				}
 			}
 
-			$.each(pMessages, function(key, value) {
+			$.each(messages, function(key, value) {
 				//console.log('value["sender_id"]='+value["sender_id"]+', value["sender_id"]='+value["receiver_id"]);
 				if (value["sender_id"] == currentSender) {
-					$("#messages").append(paint_message("justify-content-end", pUsers[iSender].mime, pUsers[iSender].image,
+					$("#messages").append(paint_message("justify-content-end", users[iSender].mime, users[iSender].image,
 						value["content"], value["tmessage"], "msg_cotainer_send"));
 				} else {
-					$("#messages").append(paint_message("justify-content-start", pUsers[iReceiver].mime, pUsers[iReceiver].image,
+					$("#messages").append(paint_message("justify-content-start", users[iReceiver].mime, users[iReceiver].image,
 						value["content"], value["tmessage"], "msg_cotainer"));
 				}
 			});
@@ -183,23 +183,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	      		paint_messages(messages, users);
 	      	},
 	      	error: function (request, status, error) {
-		  	 	console.log("error: "+request.responseText);
-		  	 	paint_messages([], users);
-		  	 }
-		  });
-	    }
+	      		console.log("error: "+request.responseText);
+	      		paint_messages([], users);
+	      	}
+	      });
+	  }
 
-	    //load list of users but pNotUser
-	    function load_users(pNotUser) {
+	    //load list of users but not currentSender
+	    function load_users() {
+	    	
+	    	$("#contacts").empty();
 	    	$.ajax({
 	    		method: "POST",
 	    		url: "userList.php",
-	    		data: {"currentSender": pNotUser},
+	    		data: {},
 	    		success: function(data) {
 	    			users = $.parseJSON(data);
-	    			paint_users(users);
+		    		paint_users(users);
 	    		}
-		    	}).done(function() {
+	    	}).done(function() {
+	    		//load user info and messages for the first time
+				if (currentReceiver=="") {
 		    		for(var i = 0; i < users.length; i++) {
 		    			if (users[i].username != currentSender) {
 		    				currentReceiver = users[i].username;
@@ -207,32 +211,53 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		    				break;
 		    			}
 		    		}
-		    		load_user_info();
-		    		load_messages(currentSender, currentReceiver);
-		    	}
-	    	);
+	    		}
+	    		load_user_info(users, iReceiver);
+	    		load_messages(currentSender, currentReceiver);
+	    	});
 	    }
 
-	    function load_user_info() {
+	    function load_user_info(pUsers, pIReceiver) {
 	    	//change image
-	    	$("#div_img_big").empty();
+	    	$("#div_img_big").empty(); //id doesn't exist
 
-	    	$("#div_img_big").append('<img src="data:'+users[iReceiver].mime+';base64,'+users[iReceiver].image+'" class="rounded-circle user_img">');
+	    	$("#div_img_big").append('<img src="data:'+pUsers[pIReceiver].mime+';base64,'+pUsers[pIReceiver].image+'" class="rounded-circle user_img">');
 	    	//change username
-	    	$("#userName").html("Chat with " + users[iReceiver].username);
+	    	$("#userName").html("Chat with " + pUsers[pIReceiver].username);
 	    }
 
 	    function paint_users(pUsers) {
 	    	$.each(pUsers, function( key, value) {
+	    		console.log(value["username"] + "-" + currentSender + "-"+currentReceiver);
 	    		if (value["username"] != currentSender) {
-	    			paint_user(value["username"], value["mime"], value["image"]);
+	    			var myClass = "inactive"
+	    			if (value["username"] == currentReceiver) {
+	    				myClass = "active";
+	    			}
+	    			
+	    			paint_user(value["username"], value["mime"], value["image"], myClass);
 	    		}
 	    	});
 
 			//activate click event
 			$('div .user-menu').click(function(){
-				console.log("Click event to load messages");
+				console.log("User clicked and load messages");
+
+				$("li .user-menu .user_info span").each(function(index){
+					if ($(this).text() == currentReceiver) {
+						//the old user is now inactive
+						$(this).parent().parent().parent().removeClass("active");
+						$(this).parent().parent().parent().addClass("inactive");	
+					}
+					
+				});
+
+				//set new current receiver to the user clicked
 				currentReceiver = $(this).parent().find(".user_info span").text();
+
+				//set class "active" for the active user
+				$(this).parent().removeClass("inactive");
+				$(this).parent().addClass("active");
 				//update iReceiver index
 				for(var i = 0; i < pUsers.length; i++) {
 					if (pUsers[i].username == currentReceiver) {
@@ -240,22 +265,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 						break;
 					}
 				}
-				load_user_info();
+				load_user_info(users, iReceiver);
 
 				load_messages(currentSender, currentReceiver);
 			});
 		}
 
-		function paint_user(pUser, pMime, pImage) {
+		function paint_user(pUser, pMime, pImage, pClass) {
 			//Do it better creating DOM nodes
 			var str = "";
 
-			str += '<li class="active">';
+			str += '<li class="'+pClass+'">';
 			str += '<div class="d-flex user-menu">'; //class: bg-highlight?
 			str += '<div class="img_cont">';
 			str += '<img src="data:' + pMime + ';base64,' + pImage + '" class="rounded-circle user_img">';
-			str += '<!-- <span class="online_icon"></span> -->';
-			str += '<!-- <span class="online_icon offline"></span> -->';
+			//str += '<!-- <span class="online_icon"></span> -->';
+			//str += '<!-- <span class="online_icon offline"></span> -->';
 			str += '</div>';
 			str += '<div class="user_info">';
 			str += '<span>' + pUser + '</span>';
@@ -297,14 +322,54 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 				});
 			});
 
+			$("#message_text").keypress(function(event) {
+			    if (event.keyCode === 13) {
+			        $("#send").click();
+			        event.preventDefault();
+			    }
+			});
+
 			$('#logout').click(function() {
 				window.location.replace("index.php?logout=1");
 			});
 
+			//every two seconds I reload user list and message
+			//if there are new ones
 			window.setInterval(function(){
-			  //a better implementation is with sockets.io
-			  //https://www.telerik.com/blogs/building-a-real-time-data-visualization-dashboard-with-jquery-socket.io-and-kendo-ui
-			  load_messages(currentSender, currentReceiver);
+				//a better implementation all this is with sockets.io
+				//https://www.telerik.com/blogs/building-a-real-time-data-visualization-dashboard-with-jquery-socket.io-and-kendo-ui
+
+				//load users because there could be new ones
+				//I'll load all of them if there is a new one
+				//** improve it loading only the new ones
+				$.ajax({
+		    		method: "POST",
+		    		url: "numUsers.php",
+		    		data: {},
+		    		success: function(data) {
+		    			var parsedData = $.parseJSON(data);
+		    			if (users.length < parsedData[0]["numUsers"]) {
+		    				load_users();
+		    			}
+		    		}
+	    		});
+
+				//I'll load all messages if there are new ones
+				//** improve it loading only the new ones
+				$.ajax({
+		    		method: "POST",
+		    		url: "numMessages.php",
+		    		data: {"currentSender": currentSender, "currentReceiver": currentReceiver},
+		    		success: function(data) {
+		    			var parsedData = $.parseJSON(data);
+
+		    			if ($("#nMessages").text().split(" Messages")[0]*1 < parsedData[0]["numMessages"]) {
+		    				console.log("*entro");
+		    				load_messages(currentSender, currentReceiver);
+		    			}
+		    		}
+	    		});
+				
 			}, 2000);
 
 		});

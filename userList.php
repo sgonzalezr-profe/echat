@@ -3,8 +3,10 @@
 //header('Content-Type:application/json');
 session_start();
 
-if ((array_key_exists("username", $_SESSION) && $_SESSION['username']) || (array_key_exists("username", $_COOKIE) && $_COOKIE['username'])) {
+if ((array_key_exists("username", $_SESSION) && $_SESSION['username']) || 
+    (array_key_exists("username", $_COOKIE) && $_COOKIE['username'])) {
 
+    $numUsers = $_POST['numUsers'];
    
 
     include("connection.php");
@@ -18,14 +20,14 @@ if ((array_key_exists("username", $_SESSION) && $_SESSION['username']) || (array
             $jsonData[] = $array;
         }
     }
-    $json = json_encode($jsonData);
+    $json = json_encode($jsonData,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     echo stripslashes($json);
     
     
     //Do I need to close the connection?
     
 } else {
-    header("Location: index.php");
+    header("Location: index.php?logout=1");
 
 }
       

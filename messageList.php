@@ -25,7 +25,7 @@ if (array_key_exists("currentSender", $_POST) && array_key_exists("currentReceiv
         }
     }
 
-    $json = json_encode($jsonData);
+    $json = json_encode($jsonData,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     echo stripslashes($json);
     
 
