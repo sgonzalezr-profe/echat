@@ -18,7 +18,7 @@
         	 $row = mysqli_fetch_array(mysqli_query($link, $query));
         	 echo $row["tmessage"];
 
-        	 //Do I need to close the connection?
+        	 mysqli_close($link);
 
         }
         else {

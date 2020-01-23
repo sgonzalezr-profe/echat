@@ -23,8 +23,7 @@ if ((array_key_exists("username", $_SESSION) && $_SESSION['username']) ||
     $json = json_encode($jsonData,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     echo stripslashes($json);
     
-    
-    //Do I need to close the connection?
+    mysqli_close($link);
     
 } else {
     header("Location: index.php?logout=1");
