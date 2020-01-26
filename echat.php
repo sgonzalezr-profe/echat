@@ -117,8 +117,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		var currentSender = "<?php echo $_SESSION['username'] ?>"; //current_user from session variable
 		var currentReceiver = ""; //user with the conversation
 		var users = null; //all user data
-		var iSender = 0; //index in the user array of sender
-		var iReceiver = 0; //index in the user array of receiver
+		var iSender = -1; //index in the user array of sender
+		var iReceiver = -1; //index in the user array of receiver
 		var messages = null; //all messages of the current conversation
 		var firstTime = true; //load the first user the first load
 		
@@ -135,9 +135,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 					iSender = i;
 				} else if (users[i].username == currentReceiver) {
 					iReceiver = i;
-				} else if (iReceiver != 0 && iSender != 0) {
+				} else if (iReceiver != -1 && iSender != -1) {
 					break;
 				}
+			}
+
+			if (iSender == -1 && iReceiver == -1) {
+				window.location.replace("index.php?logout=1");
 			}
 
 			$.each(messages, function(key, value) {
@@ -199,7 +203,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	    		data: {},
 	    		success: function(data) {
 	    			users = $.parseJSON(data);
-		    		paint_users(users);
 	    		}
 	    	}).done(function() {
 	    		//load user info and messages for the first time
@@ -212,6 +215,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 		    			}
 		    		}
 	    		}
+	    		paint_users(users);
 	    		load_user_info(users, iReceiver);
 	    		load_messages(currentSender, currentReceiver);
 	    	});
@@ -221,9 +225,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	    	//change image
 	    	$("#div_img_big").empty(); //id doesn't exist
 
-	    	$("#div_img_big").append('<img src="data:'+pUsers[pIReceiver].mime+';base64,'+pUsers[pIReceiver].image+'" class="rounded-circle user_img">');
-	    	//change username
-	    	$("#userName").html("Chat with " + pUsers[pIReceiver].username);
+	    	console.log("load_user_info: "+pIReceiver);
+
+	    	if (pIReceiver != -1) {
+	    		$("#div_img_big").append('<img src="data:'+pUsers[pIReceiver].mime+';base64,'+pUsers[pIReceiver].image+'" class="rounded-circle user_img">');
+		    	//change username
+		    	$("#userName").html("Chat with " + pUsers[pIReceiver].username);
+	    	}
 	    }
 
 	    function paint_users(pUsers) {

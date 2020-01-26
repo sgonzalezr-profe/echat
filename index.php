@@ -142,7 +142,7 @@ if (array_key_exists("submit", $_POST)) {
 ---------->
 <html>
 <head>
-	<title>Chat</title>
+	<title>eChat</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -172,19 +172,19 @@ if (array_key_exists("submit", $_POST)) {
 
 			<fieldset class="form-group">
 
-				<input class="form-control" type="text" name="username" placeholder="Your username">
+				<input class="form-control" type="text" name="username" placeholder="Your username" tabindex="1">
 
 			</fieldset>
 
 			<fieldset class="form-group">
 
-				<input class="form-control" type="password" name="password" placeholder="Password">
+				<input class="form-control" type="password" name="password" placeholder="Password" tabindex="2">
 
 			</fieldset>
 
 			<fieldset class="form-group">
 				<div class="custom-file">
-					<input type="file" class="custom-file-input form-control" name="file01" id="file01">
+					<input type="file" class="custom-file-input form-control" name="file01" id="file01" tabindex="3">
 					<label class="custom-file-label form-control" for="file01" id="labelfile01">Choose your image</label>
 				</div>
 			</fieldset>
@@ -193,13 +193,13 @@ if (array_key_exists("submit", $_POST)) {
 
 				<label>
 
-					<input type="checkbox" name="stayLoggedIn" value="1"><span class="green"> Stay logged in</span>
+					<input type="checkbox" name="stayLoggedIn" value="1" tabindex="4"><span class="green"> Stay logged in</span>
 
 				</label>
 
 				<label>
 
-					<input type="checkbox" name="termAndConditions" value="1" required> <span class="green"> I have read the</span> <a href="termsandconditions.html" target="_blank">Terms & Conditions</a>
+					<input type="checkbox" name="termAndConditions" value="1" tabindex="5"> <span class="green"> I have read the</span> <a href="#" tabindex="6">Terms & Conditions</a>
 
 				</label>
 
@@ -209,11 +209,11 @@ if (array_key_exists("submit", $_POST)) {
 
 				<input type="hidden" name="signUp" value="1">
 
-				<input class="btn btn-success" type="submit" name="submit" value="Sign Up!">
+				<input class="btn btn-success" type="submit" name="submit" value="Sign Up!" tabindex="7">
 
 			</fieldset>
 
-			<p><a class="toggleForms" href="#">Log in</a></p>
+			<p><a class="toggleForms" href="#" tabindex="8">Log in</a></p>
 
 		</form>
 
@@ -237,13 +237,13 @@ if (array_key_exists("submit", $_POST)) {
 
 				<label>
 
-					<input type="checkbox" name="stayLoggedIn" value="1"> Stay logged in
+					<input type="checkbox" name="stayLoggedIn" value="1">Stay logged in
 
 				</label>
 
 				<label>
 
-					<input type="checkbox" name="termAndConditions" value="1" required> I have read the<a href="termsandconditions.html" target="_blank">Terms & Conditions</a>
+					<input type="checkbox" name="termAndConditions" value="1">I have read the<a href="#">Terms & Conditions</a>
 
 				</label>
 
@@ -258,28 +258,51 @@ if (array_key_exists("submit", $_POST)) {
 			</fieldset>
 
 			<p><a class="toggleForms" href="#">Sign up</a></p>
-
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+  Launch demo modal
+</button>
 		</form>
 
 	</div>
-<script type="text/javascript">
-	$(document).ready(function(){
+	<!-- Modal -->
+	<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					...
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function(){
 
 
-		$("#file01").change(function(e){
-			var fileName = e.target.files[0].name;
-			$("#labelfile01").text(fileName);
-		});
+			$("#file01").change(function(e){
+				var fileName = e.target.files[0].name;
+				$("#labelfile01").text(fileName);
+			});
 
-		$(".toggleForms").click(function() {
+			$(".toggleForms").click(function() {
 				$("#signUpForm").toggle();
 				$("#logInForm").toggle();
 			});
 
+		});
 
-	});
 
-</script>
+	</script>
 </body>
 </html>
 
